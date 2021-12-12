@@ -15,9 +15,21 @@ function App() {
   useEffect(() => {
     setSession(supabase.auth.session())
 
-    console.log(supabase.auth.user())
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (_event === 'SIGNED_IN') {
+        const user = supabase.auth.user()
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+        const { body } = await supabase.from('users').select('id').eq('id', user?.id).single()
+        if (body) return
+
+        // Save user data
+        await supabase.from('users').insert({
+          id: user?.id,
+          email: user?.email,
+          username: user?.user_metadata.user_name,
+        })
+      }
+
       setSession(session)
     })
   }, [])

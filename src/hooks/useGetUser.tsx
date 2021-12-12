@@ -16,8 +16,8 @@ const useGetUser = () => {
       const user = supabase.auth.user()
 
       let { data, error, status } = await supabase
-        .from('profiles')
-        .select(`username, website, avatar_url`)
+        .from('users')
+        .select(`firstname, lastname, username`)
         .eq('id', user?.id)
         .single()
 
@@ -25,9 +25,7 @@ const useGetUser = () => {
         throw error
       }
 
-      if (data) {
-        console.log('Get!')
-      }
+      if (data) setUser(data)
     } catch (error) {
       setError(error)
     } finally {
