@@ -15,9 +15,11 @@ const useGetUser = () => {
       setLoading(true)
       const user = supabase.auth.user()
 
+      if (user === null) return
+
       let { data, error, status } = await supabase
         .from('users')
-        .select(`firstname, lastname, username`)
+        .select(`firstname, id, lastname, username`)
         .eq('id', user?.id)
         .single()
 

@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react'
+import { Provider } from 'react-redux'
+import { initializeStore } from './store/store'
 import { Session } from '@supabase/supabase-js'
 import { supabase } from './supabaseClient'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './components/Home'
 import Profile from './components/Profile'
 import Login from './components/Login'
-import useGetUser from './hooks/useGetUser'
+import Auth from './components/Auth'
+
+const store = initializeStore()
 
 function App() {
   const [session, setSession] = useState<Session | null>(null)
-
-  const { user, loading } = useGetUser()
 
   useEffect(() => {
     setSession(supabase.auth.session())
@@ -34,13 +36,17 @@ function App() {
     })
   }, [])
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/user/:id" element={<Profile />} />
-        <Route path="login" element={<Login />} />
-      </Routes>
-    </BrowserRouter>
+    <Provider store={store}>
+      <Auth>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/user/:id" element={<Profile />} />
+            <Route path="login" element={<Login />} />
+          </Routes>
+        </BrowserRouter>
+      </Auth>
+    </Provider>
   )
 }
 
