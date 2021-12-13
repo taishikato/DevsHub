@@ -8,6 +8,7 @@ const loginUser = (state = {}, action: any) => {
       return {
         id: action.user.id,
         username: action.user.username,
+        photos: action.user.photos,
       }
     case LOGOUT:
       return null
