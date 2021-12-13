@@ -24,7 +24,7 @@ const Home = () => {
       .not('id', 'eq', loginUser.id)
 
     if ((data as any).length === 0) {
-      setTextToShow('We need more people to show other users...')
+      setTextToShow('Sorry...We need more people to show other users.')
       return
     }
 
