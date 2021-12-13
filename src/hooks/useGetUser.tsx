@@ -3,7 +3,7 @@ import { supabase } from '../supabaseClient'
 
 const useGetUser = () => {
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<any | null>(null)
 
   useEffect(() => {

@@ -1,15 +1,25 @@
 import { createStore, combineReducers } from 'redux'
-import { LOGIN, LOGOUT } from './action'
+import { LOGIN, LOGOUT, DONE_CHECKING } from './action'
 
 const loginUser = (state = {}, action: any) => {
   switch (action.type) {
     case LOGIN:
+      if (action.user === null) return null
       return {
-        id: action.id,
-        username: action.username,
+        id: action.user.id,
+        username: action.user.username,
       }
     case LOGOUT:
-      return {}
+      return null
+    default:
+      return state
+  }
+}
+
+const isCheckingLogin = (state = true, action: any) => {
+  switch (action.type) {
+    case DONE_CHECKING:
+      return false
     default:
       return state
   }
@@ -17,6 +27,7 @@ const loginUser = (state = {}, action: any) => {
 
 const reducer = combineReducers({
   loginUser,
+  isCheckingLogin,
 })
 
 export const initializeStore = (preloadedState = {}) => {
