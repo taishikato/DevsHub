@@ -14,13 +14,12 @@ const useGetUser = () => {
     try {
       setLoading(true)
       const user = supabase.auth.user()
-      console.log('hooks', user)
 
       if (user === null) return
 
       let { data, error, status } = await supabase
         .from('users')
-        .select(`firstname, id, lastname, username, photos`)
+        .select(`firstname, id, lastname, username, photos, gh_avatar`)
         .eq('id', user?.id)
         .single()
 

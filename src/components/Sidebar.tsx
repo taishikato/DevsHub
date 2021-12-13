@@ -18,13 +18,9 @@ const Sidebar = () => {
   }, [loginUser])
 
   return (
-    <div className="w-[250px] border-r border-gray-200">
-      <div className="flex flex-wrap items-center p-2 space-x-4">
-        {profileImage ? (
-          <img src={profileImage} className="rounded-full" width="40" alt="" />
-        ) : (
-          <IoPersonCircleSharp size={40} />
-        )}
+    <div className="w-[300px] border-r border-gray-200">
+      <div className="flex flex-wrap items-center p-8 space-x-4">
+        <img src={profileImage || loginUser.gh_avatar} className="rounded-full" width="40" alt="" />
         <div className="font-semibold">
           <Link to="/settings">{loginUser.firstname || loginUser.username}</Link>
         </div>

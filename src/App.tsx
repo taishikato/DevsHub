@@ -5,6 +5,7 @@ import Home from './components/Home'
 import Profile from './components/Profile'
 import Login from './components/Login'
 import Auth from './components/Auth'
+import Chat from './components/Chat'
 
 const store = initializeStore()
 
@@ -16,7 +17,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/settings" element={<Profile />} />
-            <Route path="login" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/chats/:id" element={<Chat />} />
           </Routes>
         </BrowserRouter>
       </Auth>
