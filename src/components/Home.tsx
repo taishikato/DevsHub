@@ -13,6 +13,8 @@ const Home = () => {
   const isCheckingLogin = useSelector((state) => (state as any).isCheckingLogin)
   const [potentialUser, setPotentialUser] = useState<any>(null)
   const [isLogin, setIsLogin] = useState(false)
+
+  const [textToShow, setTextToShow] = useState('Someone is coming...')
   const fetchPosientialUser = async () => {
     setPotentialUser(null)
 
@@ -20,6 +22,11 @@ const Home = () => {
       .from('users')
       .select('username, photos, id, gh_avatar')
       .not('id', 'eq', loginUser.id)
+
+    if ((data as any).length === 0) {
+      setTextToShow('We need more people to show other users...')
+      return
+    }
 
     const randomIndex = Math.floor(Math.random() * (data as any[]).length)
 
@@ -108,9 +115,7 @@ const Home = () => {
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-center h-[300px] text-lg font-semibold">
-            Someone is coming...
-          </div>
+          <div className="flex items-center justify-center h-[300px] text-lg font-semibold">{textToShow}</div>
         )}
       </div>
     </div>
