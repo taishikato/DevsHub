@@ -2,9 +2,16 @@ import { useState, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { IoPersonCircleSharp } from 'react-icons/io5'
 
-const Sidebar = () => {
+interface Props {
+  chats?: {
+    id: string
+    user_picture: string
+    username: string
+  }[]
+}
+
+const Sidebar = ({ chats }: Props) => {
   const loginUser = useSelector((state) => (state as any).loginUser)
   const [profileImage, setProfileImage] = useState<string | null>(null)
 
@@ -18,13 +25,33 @@ const Sidebar = () => {
   }, [loginUser])
 
   return (
-    <div className="w-[300px] border-r border-gray-200">
-      <div className="flex flex-wrap items-center p-8 space-x-4">
-        <img src={profileImage || loginUser.gh_avatar} className="rounded-full" width="40" alt="" />
+    <div className="w-[300px] border-r border-gray-200 p-6">
+      <div className="flex flex-wrap items-center space-x-3">
+        <img
+          src={profileImage || loginUser.gh_avatar}
+          className="rounded-full w-[30px] border box-content"
+          alt=""
+        />
         <div className="font-semibold">
           <Link to="/settings">{loginUser.firstname || loginUser.username}</Link>
         </div>
       </div>
+      <div className="h-[2px] bg-slate-200 my-5" />
+      {chats && (
+        <>
+          <div className="mb-4 text-base font-bold">Chats</div>
+          {chats.map((chat) => (
+            <Link
+              to={`/chats/${chat.id}`}
+              key={chat.id}
+              className="flex flex-wrap items-center p-3 mb-3 space-x-3 rounded-full hover:bg-slate-200"
+            >
+              <img src={chat.user_picture} className="w-[25px] rounded-full border box-content" alt="" />
+              <div className="text-sm font-semibold">{chat.username}</div>
+            </Link>
+          ))}
+        </>
+      )}
     </div>
   )
 }
