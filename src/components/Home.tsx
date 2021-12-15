@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux'
 import { supabase } from '../supabaseClient'
 import Header from './Header'
 import Sidebar from './Sidebar'
-import { IoChatbubbleSharp, IoSyncCircle } from 'react-icons/io5'
+import { IoChatbubbleOutline, IoClose } from 'react-icons/io5'
 import { v4 as uuidv4 } from 'uuid'
 
 interface ChatData {
@@ -30,7 +30,7 @@ const Home = () => {
   const fetchPosientialUser = async () => {
     setPotentialUser(null)
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('users')
       .select('username, photos, id, gh_avatar')
       .not('id', 'eq', loginUser.id)
@@ -45,7 +45,7 @@ const Home = () => {
     const potentialUser = (data as any[])[randomIndex]
 
     if (potentialUser.photos) {
-      const { data, error } = await supabase.storage.from('user-upload').download(potentialUser.photos[0])
+      const { data } = await supabase.storage.from('user-upload').download(potentialUser.photos[0])
       const url = URL.createObjectURL(data as Blob)
 
       potentialUser.imageUrl = url
@@ -125,36 +125,62 @@ const Home = () => {
     navigate(`/chats/${(data as any).id}`)
   }
 
+  const skills = ['JavaScript', 'TypeScript', 'Ruby']
+
   return (
     <>
       <div className="flex h-screen">
         <Sidebar chats={chats} />
         <div className="flex-1">
-        <Header />
+          <Header />
           {potentialUser ? (
-            <div className="m-8 bg-yellow-100 rounded-md h-[300px]">
-              <div className="flex h-full bg-yellow-100 rounded-md">
+            <div className="m-8 rounded-md h-[500px]">
+              <div className="flex space-x-3 m-8 rounded-md h-[500px]">
                 <div
                   style={{ backgroundImage: `url(${potentialUser.imageUrl || potentialUser.gh_avatar})` }}
-                  className="w-1/2 bg-center bg-no-repeat bg-cover rounded-l"
+                  className="w-1/2 bg-center bg-no-repeat bg-cover rounded-2xl"
                 />
-                <div className="flex items-center w-1/2 p-4 text-lg font-bold">{potentialUser.username}</div>
+                <div className="w-1/2 h-full p-4">
+                  <div className="mb-3 text-3xl font-bold">{potentialUser.username}</div>
+                  <div className="flex flex-wrap mb-3 space-x-2">
+                    <div className="inline px-3 py-1 text-sm font-semibold text-green-500 bg-green-100 rounded-full">
+                      JavaScript
+                    </div>
+                    <div className="inline px-3 py-1 text-sm font-semibold rounded-full text-emerald-500 bg-emerald-100">
+                      TypeScript
+                    </div>
+                    <div className="inline px-3 py-1 text-sm font-semibold rounded-full text-rose-500 bg-rose-100">
+                      Ruby
+                    </div>
+                  </div>
+                  <div>
+                    Hello. I am a hyper developer in this planet. I'd live to talk abou t a new idea and new
+                    tech.
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-center mt-3 space-x-3">
-                <div
-                  className="p-3 text-white bg-gray-500 rounded-full cursor-pointer"
+              <div className="flex justify-center mt-2 space-x-7">
+                <button
+                  className="p-3 text-xl font-semibold border rounded-full cursor-pointer border-slate-500 text-slate-700 hover:bg-slate-200"
                   title="Meet another dev"
-                  onClick={fetchPosientialUser}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    fetchPosientialUser()
+                  }}
                 >
-                  <IoSyncCircle size={30} />
-                </div>
-                <div
-                  className="p-3 text-white bg-green-500 rounded-full cursor-pointer"
+                  <IoClose size={30} />
+                </button>
+                <button
+                  className="flex items-center px-4 py-2 space-x-2 text-xl font-semibold text-white bg-green-500 rounded-full hover:bg-green-600"
                   title="Talk"
-                  onClick={createOrGetChatRoom}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    createOrGetChatRoom()
+                  }}
                 >
-                  <IoChatbubbleSharp size={30} />
-                </div>
+                  <IoChatbubbleOutline size={30} />
+                  <div>Commit to talk</div>
+                </button>
               </div>
             </div>
           ) : (
