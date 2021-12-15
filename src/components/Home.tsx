@@ -7,24 +7,12 @@ import Sidebar from './Sidebar'
 import { IoChatbubbleOutline, IoClose } from 'react-icons/io5'
 import { v4 as uuidv4 } from 'uuid'
 
-interface ChatData {
-  id: string
-  user_ids: string[]
-}
-
-interface Chat {
-  id: string
-  user_picture: string
-  username: string
-}
-
 const Home = () => {
   const navigate = useNavigate()
   const loginUser = useSelector((state) => (state as any).loginUser)
   const isCheckingLogin = useSelector((state) => (state as any).isCheckingLogin)
   const [potentialUser, setPotentialUser] = useState<any>(null)
   const [isLogin, setIsLogin] = useState(false)
-  const [chats, setChats] = useState<Chat[]>([])
 
   const [textToShow, setTextToShow] = useState('Someone is coming...')
   const fetchPosientialUser = async () => {
@@ -66,36 +54,6 @@ const Home = () => {
     }
   }, [loginUser, isCheckingLogin, navigate])
 
-  useEffect(() => {
-    const fetchChats = async () => {
-      const { data: chatData } = await supabase
-        .from('chats')
-        .select('id, user_ids')
-        .contains('user_ids', [loginUser.id])
-
-      const chats: Chat[] = []
-
-      for (const chatDataSigle of chatData as ChatData[]) {
-        const { id } = chatDataSigle
-        const anotherUserId = chatDataSigle.user_ids.filter((id: string) => id !== loginUser.id)
-        const { data: anotherUserData } = await supabase
-          .from('users')
-          .select('id, username, gh_avatar')
-          .eq('id', anotherUserId)
-
-        chats.push({
-          id,
-          user_picture: (anotherUserData as any)[0].gh_avatar,
-          username: (anotherUserData as any)[0].username,
-        })
-      }
-
-      setChats(chats)
-    }
-
-    if (loginUser.id) fetchChats()
-  }, [loginUser.id])
-
   if (!isLogin) {
     return (
       <div className="flex items-center justify-center h-[300px]">
@@ -117,15 +75,13 @@ const Home = () => {
       return
     }
 
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('chats')
       .insert({ id: uuidv4(), user_ids: [loginUser.id, potentialUser.id] })
       .single()
 
     navigate(`/chats/${(data as any).id}`)
   }
-
-  const skills = ['JavaScript', 'TypeScript', 'Ruby']
 
   return (
     <>
