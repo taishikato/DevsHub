@@ -5,27 +5,71 @@ import { supabase } from '../supabaseClient'
 import { logoutUser } from '../store/action'
 import { useNavigate } from 'react-router-dom'
 import { IoLogOutOutline, IoCreateOutline } from 'react-icons/io5'
+import Loading from './Loading'
 
-interface Props {
-  chats?: {
-    id: string
-    user_picture: string
-    username: string
-  }[]
-  isSettingPage?: boolean
+interface Chat {
+  id: string
+  user_picture: string
+  username: string
 }
 
-const Sidebar = ({ chats, isSettingPage = false }: Props) => {
+interface ChatData {
+  id: string
+  user_ids: string[]
+}
+
+interface Props {
+  isSettingPage?: boolean
+  showChats?: boolean
+}
+
+const Sidebar = ({ isSettingPage = false, showChats = false }: Props) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const loginUser = useSelector((state) => (state as any).loginUser)
   const [profileImage, setProfileImage] = useState<string | null>(null)
+  const [chats, setChats] = useState<Chat[]>([])
+  const [loadingChats, setLoadingChats] = useState(true)
 
   const logout = async () => {
     await supabase.auth.signOut()
     dispatch(logoutUser())
     navigate('/login')
   }
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      setLoadingChats(true)
+
+      const { data: chatData } = await supabase
+        .from('chats')
+        .select('id, user_ids')
+        .contains('user_ids', [loginUser.id])
+
+      const chats: Chat[] = []
+
+      for (const chatDataSigle of chatData as ChatData[]) {
+        const { id } = chatDataSigle
+        const anotherUserId = chatDataSigle.user_ids.filter((id: string) => id !== loginUser.id)
+        const { data: anotherUserData } = await supabase
+          .from('users')
+          .select('id, username, gh_avatar')
+          .eq('id', anotherUserId)
+
+        chats.push({
+          id,
+          user_picture: (anotherUserData as any)[0].gh_avatar,
+          username: (anotherUserData as any)[0].username,
+        })
+      }
+
+      setChats(chats)
+
+      setLoadingChats(false)
+    }
+
+    if (loginUser.id && loadingChats) fetchChats()
+  }, [loginUser.id, loadingChats])
 
   useEffect(() => {
     const fetchPhoto = async () => {
@@ -48,19 +92,24 @@ const Sidebar = ({ chats, isSettingPage = false }: Props) => {
           <Link to="/settings">{loginUser.firstname || loginUser.username}</Link>
         </div>
       </div>
-      {chats && (
+
+      {showChats && chats && (
         <>
           <div className="mt-8 mb-4 text-base font-bold">Chats</div>
-          {chats.map((chat) => (
-            <Link
-              to={`/chats/${chat.id}`}
-              key={chat.id}
-              className="flex flex-wrap items-center px-3 py-2 mb-3 space-x-3 rounded-full hover:bg-slate-200"
-            >
-              <img src={chat.user_picture} className="w-[40px] rounded-full border box-content" alt="" />
-              <div className="text-base font-semibold">{chat.username}</div>
-            </Link>
-          ))}
+          {loadingChats ? (
+            <Loading />
+          ) : (
+            chats.map((chat) => (
+              <Link
+                to={`/chats/${chat.id}`}
+                key={chat.id}
+                className="flex flex-wrap items-center px-3 py-2 mb-3 space-x-3 rounded-full hover:bg-slate-200"
+              >
+                <img src={chat.user_picture} className="w-[40px] rounded-full border box-content" alt="" />
+                <div className="text-base font-semibold">{chat.username}</div>
+              </Link>
+            ))
+          )}
         </>
       )}
 

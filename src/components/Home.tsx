@@ -130,7 +130,7 @@ const Home = () => {
   return (
     <>
       <div className="flex h-screen">
-        <Sidebar chats={chats} />
+        <Sidebar showChats={true} />
         <div className="flex-1">
           <Header />
           {potentialUser ? (
