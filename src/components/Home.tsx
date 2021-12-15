@@ -127,10 +127,10 @@ const Home = () => {
 
   return (
     <>
-      <Header />
       <div className="flex h-screen">
         <Sidebar chats={chats} />
         <div className="flex-1">
+        <Header />
           {potentialUser ? (
             <div className="m-8 bg-yellow-100 rounded-md h-[300px]">
               <div className="flex h-full bg-yellow-100 rounded-md">

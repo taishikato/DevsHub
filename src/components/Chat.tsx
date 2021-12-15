@@ -64,7 +64,7 @@ const Chat = () => {
     // Listen for new messages
     const messageListener = supabase
       .from('messages')
-      .on('*', (payload) => {
+      .on('*', (payload: any) => {
         setNewMessageFromSub(payload.new)
       })
       .subscribe()

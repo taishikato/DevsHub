@@ -113,7 +113,7 @@ const Profile = () => {
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
+      <Sidebar isSettingPage={true} />
       <div className="flex-1">
         <Header />
         <div className="p-12">
