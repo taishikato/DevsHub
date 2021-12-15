@@ -3,6 +3,7 @@ import { supabase } from '../supabaseClient'
 import { useParams } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import { useSelector } from 'react-redux'
+import Header from './Header'
 
 interface Message {
   chat_id: string
@@ -88,40 +89,45 @@ const Chat = () => {
   }, [newMessageFromSub])
 
   return (
-    <div className="flex h-full min-h-screen">
-      <Sidebar />
-      <div className="flex-1 m-8">
-        {messages.map((m) => {
-          return (
-            <div key={m.id} className="p-3 mb-2 bg-gray-200 rounded">
-              {m.content}
-            </div>
-          )
-        })}
-        <input
-          type="text"
-          className="p-2 border rounded"
-          onChange={(e) => setNewMessage(e.target.value)}
-          value={newMessage}
-        />
-        {newMessage === '' && sendingMessage === false && (
-          <button className="px-5 py-2 bg-gray-200 rounded cursor-not-allowed">Send</button>
-        )}
-        {newMessage.length > 0 && sendingMessage === false && (
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              sendNewMessage(newMessage)
-            }}
-            className="px-5 py-2 bg-gray-300 rounded"
-          >
-            Send
-          </button>
-        )}
+    <>
+      <Header />
+      <div className="flex h-full min-h-screen">
+        <Sidebar />
+        <div className="flex-1 m-8">
+          {messages.map((m) => {
+            return (
+              <div key={m.id} className="p-3 mb-2 bg-gray-200 rounded">
+                {m.content}
+              </div>
+            )
+          })}
+          <div className="absolute bottom-0">
+            <input
+              type="text"
+              className="p-2 border rounded"
+              onChange={(e) => setNewMessage(e.target.value)}
+              value={newMessage}
+            />
+            {newMessage === '' && sendingMessage === false && (
+              <button className="px-5 py-2 bg-gray-200 rounded cursor-not-allowed">Send</button>
+            )}
+            {newMessage.length > 0 && sendingMessage === false && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault()
+                  sendNewMessage(newMessage)
+                }}
+                className="px-5 py-2 bg-gray-300 rounded"
+              >
+                Send
+              </button>
+            )}
 
-        {sendingMessage && <button className="px-5 py-2 bg-gray-300 rounded">Sending...</button>}
+            {sendingMessage && <button className="px-5 py-2 bg-gray-300 rounded">Sending...</button>}
+          </div>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 

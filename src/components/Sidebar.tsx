@@ -25,7 +25,7 @@ const Sidebar = ({ chats }: Props) => {
   }, [loginUser])
 
   return (
-    <div className="w-[300px] border-r border-gray-200 p-6">
+    <div className="border-r border-slate-200 p-6 w-1/4 min-w-[260px] max-w-[400px]">
       <div className="flex flex-wrap items-center space-x-3">
         <img
           src={profileImage || loginUser.gh_avatar}
@@ -44,7 +44,7 @@ const Sidebar = ({ chats }: Props) => {
             <Link
               to={`/chats/${chat.id}`}
               key={chat.id}
-              className="flex flex-wrap items-center p-3 mb-3 space-x-3 rounded-full hover:bg-slate-200"
+              className="flex flex-wrap items-center px-3 py-2 mb-3 space-x-3 rounded-full hover:bg-slate-200"
             >
               <img src={chat.user_picture} className="w-[25px] rounded-full border box-content" alt="" />
               <div className="text-sm font-semibold">{chat.username}</div>

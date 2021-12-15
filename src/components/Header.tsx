@@ -16,15 +16,20 @@ const Header = () => {
   }
 
   return (
-    <div className="p-3 text-center">
-      <Link to="/" className="font-bold">
-        DevsHub
-      </Link>
+    <div className="flex flex-row-reverse justify-between p-3 bg-slate-900 text-slate-50">
+      {/* show if the user is logged in */}
       {Object.keys(loginUser).length > 0 && (
         <div onClick={logout} className="cursor-pointer">
           Logout
         </div>
       )}
+
+      <Link to="/" className="font-bold">
+        DevsHub
+      </Link>
+
+      {/* dummy element */}
+      <div />
     </div>
   )
 }

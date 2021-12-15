@@ -126,41 +126,45 @@ const Home = () => {
   }
 
   return (
-    <div className="flex h-screen">
-      <Sidebar chats={chats} />
-      <div className="flex-1">
-        <Header />
-        {potentialUser ? (
-          <div className="m-8 bg-yellow-100 rounded-md h-[300px]">
-            <div className="flex h-full bg-yellow-100 rounded-md">
-              <div
-                style={{ backgroundImage: `url(${potentialUser.imageUrl || potentialUser.gh_avatar})` }}
-                className="w-1/2 bg-center bg-no-repeat bg-cover rounded-l"
-              />
-              <div className="flex items-center w-1/2 p-4 text-lg font-bold">{potentialUser.username}</div>
-            </div>
-            <div className="flex justify-center mt-3 space-x-3">
-              <div
-                className="p-3 text-white bg-gray-500 rounded-full cursor-pointer"
-                title="Meet another dev"
-                onClick={fetchPosientialUser}
-              >
-                <IoSyncCircle size={30} />
+    <>
+      <Header />
+      <div className="flex h-screen">
+        <Sidebar chats={chats} />
+        <div className="flex-1">
+          {potentialUser ? (
+            <div className="m-8 bg-yellow-100 rounded-md h-[300px]">
+              <div className="flex h-full bg-yellow-100 rounded-md">
+                <div
+                  style={{ backgroundImage: `url(${potentialUser.imageUrl || potentialUser.gh_avatar})` }}
+                  className="w-1/2 bg-center bg-no-repeat bg-cover rounded-l"
+                />
+                <div className="flex items-center w-1/2 p-4 text-lg font-bold">{potentialUser.username}</div>
               </div>
-              <div
-                className="p-3 text-white bg-green-500 rounded-full cursor-pointer"
-                title="Talk"
-                onClick={createOrGetChatRoom}
-              >
-                <IoChatbubbleSharp size={30} />
+              <div className="flex justify-center mt-3 space-x-3">
+                <div
+                  className="p-3 text-white bg-gray-500 rounded-full cursor-pointer"
+                  title="Meet another dev"
+                  onClick={fetchPosientialUser}
+                >
+                  <IoSyncCircle size={30} />
+                </div>
+                <div
+                  className="p-3 text-white bg-green-500 rounded-full cursor-pointer"
+                  title="Talk"
+                  onClick={createOrGetChatRoom}
+                >
+                  <IoChatbubbleSharp size={30} />
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center h-[300px] text-lg font-semibold">{textToShow}</div>
-        )}
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-lg font-semibold">
+              {textToShow}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
