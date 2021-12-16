@@ -24,7 +24,7 @@ const Auth = ({ children }: { children: ReactNode }) => {
 
         const { body } = await supabase
           .from('users')
-          .select('firstname, id, lastname, username, photos, gh_avatar')
+          .select('firstname, id, lastname, username, photos, gh_avatar, bio, languages')
           .eq('id', user?.id)
         if ((body as any[]).length > 0) {
           dispatch(loginUser((body as any)[0]))

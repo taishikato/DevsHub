@@ -15,12 +15,13 @@ const Home = () => {
   const [isLogin, setIsLogin] = useState(false)
 
   const [textToShow, setTextToShow] = useState('Someone is coming...')
+
   const fetchPosientialUser = async () => {
     setPotentialUser(null)
 
     const { data } = await supabase
       .from('users')
-      .select('username, photos, id, gh_avatar')
+      .select('username, photos, id, gh_avatar, bio, languages')
       .not('id', 'eq', loginUser.id)
 
     if ((data as any).length === 0) {
@@ -99,20 +100,19 @@ const Home = () => {
                 <div className="w-1/2 h-full p-4">
                   <div className="mb-3 text-3xl font-bold">{potentialUser.username}</div>
                   <div className="flex flex-wrap mb-3 space-x-2">
-                    <div className="inline px-3 py-1 text-sm font-semibold text-green-500 bg-green-100 rounded-full">
-                      JavaScript
-                    </div>
-                    <div className="inline px-3 py-1 text-sm font-semibold rounded-full text-emerald-500 bg-emerald-100">
-                      TypeScript
-                    </div>
-                    <div className="inline px-3 py-1 text-sm font-semibold rounded-full text-rose-500 bg-rose-100">
-                      Ruby
-                    </div>
+                    {potentialUser.languages &&
+                      potentialUser.languages.map((language: string) => {
+                        return (
+                          <div
+                            key={language}
+                            className="inline px-3 py-1 text-sm font-semibold text-green-500 bg-green-100 rounded-full"
+                          >
+                            {language}
+                          </div>
+                        )
+                      })}
                   </div>
-                  <div>
-                    Hello. I am a hyper developer in this planet. I'd live to talk abou t a new idea and new
-                    tech.
-                  </div>
+                  <div>{potentialUser.bio}</div>
                 </div>
               </div>
               <div className="flex justify-center mt-2 space-x-7">

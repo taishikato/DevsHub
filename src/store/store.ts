@@ -10,6 +10,8 @@ const loginUser = (state = {}, action: any) => {
         username: action.user.username,
         photos: action.user.photos,
         gh_avatar: action.user.gh_avatar,
+        bio: action.user.bio,
+        languages: action.user.languages,
       }
     case LOGOUT:
       return {}

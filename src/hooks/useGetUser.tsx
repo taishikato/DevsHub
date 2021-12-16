@@ -19,7 +19,7 @@ const useGetUser = () => {
 
       let { data, error, status } = await supabase
         .from('users')
-        .select(`firstname, id, lastname, username, photos, gh_avatar`)
+        .select(`firstname, id, lastname, username, photos, gh_avatar, bio, languages`)
         .eq('id', user?.id)
         .single()
 
