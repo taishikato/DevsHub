@@ -33,6 +33,11 @@ const languagesList = [
     name: 'Ruby',
     color: 'rose',
   },
+  {
+    value: 'other',
+    name: 'Other',
+    color: 'slate',
+  },
 ]
 
 interface Language {
