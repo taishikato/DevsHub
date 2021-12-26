@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import { useSelector } from 'react-redux'
 import Header from './Header'
+import _ from 'lodash'
 
 interface Message {
   chat_id: string
@@ -18,12 +19,21 @@ interface User {
 const Chat = () => {
   const [newMessage, setNewMessage] = useState('')
   const { id } = useParams()
-  const [users] = useState(new Map())
+  const [users, setUsers] = useState(new Map())
   const loginUser = useSelector((state) => (state as any).loginUser)
   const [sendingMessage, setSendingMessage] = useState(false)
   const [messages, setMessages] = useState<any[]>([])
   const [newMessageFromSub, setNewMessageFromSub] = useState<Message | null>(null)
-  const [newOrUpdatedUser, handleNewOrUpdatedUser] = useState<User | null>(null)
+  const fetchUser = async (userId: string, setState?: (props: any) => void) => {
+    try {
+      let { body } = await supabase.from('users').select(`id, username, gh_avatar`).eq('id', userId)
+      let user = (body as any)[0]
+
+      return user
+    } catch (error) {
+      console.log('error', error)
+    }
+  }
 
   const sendNewMessage = async (message: string) => {
     setSendingMessage(true)
@@ -45,19 +55,30 @@ const Chat = () => {
         .from('messages')
         .select('id, content, user_id')
         .eq('chat_id', id)
-        .order('inserted_at', { ascending: true })
+        .order('inserted_at', { ascending: false })
+        .limit(15)
 
-      setMessages(data as any[])
+      const sorted = _.sortBy(data, ['id'])
+      // const { data, error } = await supabase.from('last_messages_4').select('*').eq('chat_id', id)
+
+      setMessages(sorted as any[])
+    }
+
+    const fetchChatInfo = async () => {
+      const { data, error } = await supabase.from('chats').select('user_ids').eq('id', id).single()
+
+      const usersMap = new Map()
+      for (const authorId of data.user_ids) {
+        const user = await fetchUser(authorId)
+        usersMap.set(user.id, user)
+      }
+
+      setUsers(usersMap)
     }
 
     fetchMessages()
+    fetchChatInfo()
   }, [id])
-
-  // New or updated user recieved from Postgres
-  useEffect(() => {
-    if (newOrUpdatedUser) users.set(newOrUpdatedUser.id, newOrUpdatedUser)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [newOrUpdatedUser])
 
   useEffect(() => {
     // Get Channels
@@ -79,8 +100,8 @@ const Chat = () => {
   useEffect(() => {
     if (newMessageFromSub && newMessageFromSub.chat_id === id) {
       const handleAsync = async () => {
-        let authorId = newMessageFromSub.user_id
-        if (!users.get(authorId)) await fetchUser(authorId, (user) => handleNewOrUpdatedUser(user))
+        // let authorId = newMessageFromSub.user_id
+        // if (!users.get(authorId)) await fetchUser(authorId, (user) => handleNewOrUpdatedUser(user))
         setMessages(messages.concat(newMessageFromSub))
       }
       handleAsync()
@@ -90,40 +111,47 @@ const Chat = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
       <div className="flex h-full min-h-screen">
         <Sidebar />
-        <div className="flex-1 m-8">
-          {messages.map((m) => {
-            return (
-              <div key={m.id} className="p-3 mb-2 bg-gray-200 rounded">
-                {m.content}
-              </div>
-            )
-          })}
-          <div className="absolute bottom-0">
+        <div className="flex flex-col flex-1 min-h-full ">
+          <div className="h-[calc(100vh-58px)] overflow-y-scroll pb-5">
+            {messages.map((m) => {
+              return (
+                <div className="hover:cursor-pointer hover:bg-slate-100">
+                  <div key={m.id} className="flex p-2 m-8 my-4 space-x-4">
+                    {users.get(m.user_id) && (
+                      <div>
+                        <img
+                          src={users.get(m.user_id).gh_avatar}
+                          alt={users.get(m.user_id).username}
+                          className="w-10 h-10 rounded-full"
+                        />
+                      </div>
+                    )}
+                    <div>
+                      <div className="font-semibold">{users.get(m.user_id)?.username}</div>
+                      <div>{m.content}</div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <div className="w-full p-2 bg-slate-100">
             <input
               type="text"
-              className="p-2 border rounded"
+              className="w-full p-2 border rounded"
               onChange={(e) => setNewMessage(e.target.value)}
               value={newMessage}
-            />
-            {newMessage === '' && sendingMessage === false && (
-              <button className="px-5 py-2 bg-gray-200 rounded cursor-not-allowed">Send</button>
-            )}
-            {newMessage.length > 0 && sendingMessage === false && (
-              <button
-                onClick={(e) => {
-                  e.preventDefault()
-                  sendNewMessage(newMessage)
-                }}
-                className="px-5 py-2 bg-gray-300 rounded"
-              >
-                Send
-              </button>
-            )}
+              onKeyPress={(e) => {
+                if (e.key !== 'Enter') return
 
-            {sendingMessage && <button className="px-5 py-2 bg-gray-300 rounded">Sending...</button>}
+                if (newMessage.replaceAll(' ', '') === '') return
+
+                sendNewMessage(newMessage)
+              }}
+            />
           </div>
         </div>
       </div>
@@ -136,15 +164,4 @@ const Chat = () => {
  * @param {number} userId
  * @param {function} setState Optionally pass in a hook or callback to set the state
  */
-export const fetchUser = async (userId: string, setState: (props: any) => void) => {
-  try {
-    let { body } = await supabase.from('users').select(`*`).eq('id', userId)
-    let user = (body as any)[0]
-    if (setState) setState(user)
-    return user
-  } catch (error) {
-    console.log('error', error)
-  }
-}
-
 export default Chat

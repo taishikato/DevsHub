@@ -16,27 +16,32 @@ const languagesList = [
   {
     value: 'javascript',
     name: 'JavaScript',
-    color: 'green',
+    text: 'text-green-500',
+    background: 'bg-green-100',
   },
   {
     value: 'typescript',
     name: 'TypeScript',
-    color: 'emerald',
+    text: 'text-emerald-500',
+    background: 'bg-emerald-100',
   },
   {
     value: 'react',
     name: 'React',
-    color: 'blue',
+    text: 'text-blue-500',
+    background: 'bg-blue-100',
   },
   {
     value: 'ruby',
     name: 'Ruby',
-    color: 'rose',
+    text: 'text-rose-500',
+    background: 'bg-rose-100',
   },
   {
-    value: 'other',
-    name: 'Other',
-    color: 'slate',
+    value: 'others',
+    name: 'Others',
+    text: 'text-slate-500',
+    background: 'bg-slate-100',
   },
 ]
 
@@ -198,15 +203,15 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="flex space-x-3">
+            <div className="flex flex-wrap space-x-3">
               {selected.map((language) => {
                 const languageInfo = languagesList.find((l) => l.value === language)
-                const { color } = languageInfo as any
+                const { text, background } = languageInfo as any
 
                 return (
                   <div
                     key={language}
-                    className={`inline-block px-3 py-1 text-sm font-semibold text-${color}-500 bg-${color}-100 rounded-full`}
+                    className={`inline-block px-3 py-1 text-sm ${text} ${background} rounded-full`}
                   >
                     {language}
                   </div>
@@ -235,7 +240,7 @@ const Profile = () => {
               }}
             >
               <div className="relative mt-1">
-                <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
+                <Listbox.Button className="relative w-full py-2 pl-3 pr-10 text-left bg-white border border-gray-300 rounded-lg shadow-sm cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
                   <span className="block truncate">Choose</span>
                   <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
                     <HiSelector className="w-5 h-5 text-gray-400" aria-hidden="true" />
